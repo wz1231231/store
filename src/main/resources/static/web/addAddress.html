@@ -20,157 +20,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/top.css" />
 		<link rel="stylesheet" type="text/css" href="../css/footer.css" />
 
-		<script type="text/javascript">
 
-			$(function ()  {
-
-				//引入公共头部、中间导航条以及页脚
-				$(".header").load("components/head.html")
-				$(".footer").load("components/footer.html")
-				$(".middleNavigation").load("components/middleNavigationBar.html")
-
-				//页面加载完成时先把三个省市区的提示选择设置好
-				var provinceFirst = "<option value='0'>---- 选择省 ----</option>"
-				var cityFirst = "<option value='0' >---- 选择市 ----</option>"
-				var areaFirst = "<option value='0' >---- 选择区 ----</option>"
-				//插入提示选择项
-				$("#province-list").append(provinceFirst)
-				$("#city-list").append(cityFirst)
-				$("#area-list").append(areaFirst)
-
-				//记录省份查询的点击次数
-				let provinceCount = 0;
-				$("#province-list").click(function () {
-					provinceCount += 1;
-					let str = "";
-					if (provinceCount === 1){ //当count不等于1代表已经查询过了就不再做查询操作
-						$.ajax({
-							url : "/district/parent",
-							type: "get",
-							data:  "parent=86",
-							dataType: "json",
-							success: function (res) {
-								//成功之后将数据填充回下列列表当中
-								for (i= 0;i < res.data.length;i++){
-									//每一个district对象
-									let district = res.data[i]
-									str = "<option value=" + district.code +  ">"+ district.name + "</option>"
-									$("#province-list").append(str)
-								}
-							},
-							error: function () {
-								alert("查询省份列表出错，请等待攻城狮修复！！")
-							}
-						})
-					}
-				})
-				//监听省份选择以为城市选择做出变化
-				$("#province-list").change(function () {
-					//清空select下列列表中的所有option元素
-					$("#city-list").empty()
-					$("#area-list").empty()
-					// //追加默认值
-					$("#city-list").append(cityFirst)
-					$("#area-list").append(areaFirst)
-
-					//获取省份的选择是什么
-					let provinceChoose = $("#province-list").val()
-
-					//等于0表示没有选择省份，不发送ajax请求
-					if (provinceChoose === "0"){
-						return false
-					}
-
-						let str = "";
-						$.ajax({
-							url : "/district/parent",
-							type: "get",
-							data:  "parent=" + provinceChoose,
-							dataType: "json",
-							success: function (res) {
-								//成功之后将数据填充回下列列表当中
-								for (i= 0;i < res.data.length;i++){
-									//每一个district对象
-									let district = res.data[i]
-									str = "<option value=" + district.code +  ">"+ district.name + "</option>"
-									$("#city-list").append(str)
-								}
-							},
-							error: function () {
-								alert("查询城市列表出错，请等待攻城狮修复！！")
-							}
-						})
-
-				})
-
-				//监听城市选择以为区县的选择做出变化
-				$("#city-list").change(function () {
-					//获取城市的选择是什么
-					let cityChoose = $("#city-list").val()
-					//清空select下列列表中的所有option元素
-					$("#area-list").empty()
-					//追加默认值
-					$("#area-list").append(areaFirst)
-
-					if (cityChoose === "0"){
-						return false
-					}
-					let str = "";
-						$.ajax({
-							url : "/district/parent",
-							type: "get",
-							data:  "parent=" + cityChoose,
-							dataType: "json",
-							success: function (res) {
-								//成功之后将数据填充回下列列表当中
-								for (i= 0;i < res.data.length;i++){
-									//每一个district对象
-									let district = res.data[i]
-									str = "<option value=" + district.code +  ">"+ district.name + "</option>"
-									$("#area-list").append(str)
-								}
-							},
-							error: function () {
-								alert("查询区列表出错，请等待攻城狮修复！！")
-							}
-						})
-				})
-
-				//给添加按钮绑定单击事件
-				$("#btn-add-new-address").click(function () {
-					//判断手机号和收货人是否为空
-					let name = $("#name").val();
-					let phone = $("#phone").val();
-					if (phone == "" || name == ""){
-						$("#error-msg").html("请先填写需要修改的信息！");
-						return false;
-					}
-					//验证手机号是否符合要求
-					let checkPhone = /^[1][3,4,5,7,8][0-9]{9}$/;
-					if (!checkPhone.test(phone)){
-						$("#error-msg").html("手机号不符合要求！");
-						return false;
-					}
-					$.ajax({
-						url : "/address",
-						type: "post",
-						data: $("#form-add-new-address").serialize(), //获取表单的所有内容
-						dataType: "json",
-						success: function (res) {
-							if (res.status === 200){
-								alert("新增成功！")
-								location.href = "address.html"
-							}else {
-								alert(res.message)
-							}
-						},
-						error: function () {
-							alert("服务器出现故障，请等待攻城狮修复！！")
-						}
-					})
-				})
-			})
-		</script>
 	</head>
 
 	<body>
@@ -311,5 +161,157 @@
 		<!--页脚结束-->
 
 	</body>
+
+	<script type="text/javascript">
+
+		$(function ()  {
+
+			//引入公共头部、中间导航条以及页脚
+			$(".header").load("components/head.html")
+			$(".footer").load("components/footer.html")
+			$(".middleNavigation").load("components/middleNavigationBar.html")
+
+			//页面加载完成时先把三个省市区的提示选择设置好
+			var provinceFirst = "<option value='0'>---- 选择省 ----</option>"
+			var cityFirst = "<option value='0' >---- 选择市 ----</option>"
+			var areaFirst = "<option value='0' >---- 选择区 ----</option>"
+			//插入提示选择项
+			$("#province-list").append(provinceFirst)
+			$("#city-list").append(cityFirst)
+			$("#area-list").append(areaFirst)
+
+			//记录省份查询的点击次数
+			let provinceCount = 0;
+			$("#province-list").click(function () {
+				provinceCount += 1;
+				let str = "";
+				if (provinceCount === 1){ //当count不等于1代表已经查询过了就不再做查询操作
+					$.ajax({
+						url : "/districts/",
+						type: "get",
+						data:  "parent=86",
+						dataType: "json",
+						success: function (res) {
+							//成功之后将数据填充回下列列表当中
+							for (i= 0;i < res.data.length;i++){
+								//每一个district对象
+								let district = res.data[i]
+								str = "<option value=" + district.code +  ">"+ district.name + "</option>"
+								$("#province-list").append(str)
+							}
+						},
+						error: function () {
+							alert("查询省份列表出错，请等待攻城狮修复！！")
+						}
+					})
+				}
+			})
+			//监听省份选择以为城市选择做出变化
+			$("#province-list").change(function () {
+				//清空select下列列表中的所有option元素
+				$("#city-list").empty()
+				$("#area-list").empty()
+				// //追加默认值
+				$("#city-list").append(cityFirst)
+				$("#area-list").append(areaFirst)
+
+				//获取省份的选择是什么
+				let provinceChoose = $("#province-list").val()
+
+				//等于0表示没有选择省份，不发送ajax请求
+				if (provinceChoose === "0"){
+					return false
+				}
+
+				let str = "";
+				$.ajax({
+					url : "/districts",
+					type: "get",
+					data:  "parent=" + provinceChoose,
+					dataType: "json",
+					success: function (res) {
+						//成功之后将数据填充回下列列表当中
+						for (i= 0;i < res.data.length;i++){
+							//每一个district对象
+							let district = res.data[i]
+							str = "<option value=" + district.code +  ">"+ district.name + "</option>"
+							$("#city-list").append(str)
+						}
+					},
+					error: function () {
+						alert("查询城市列表出错，请等待攻城狮修复！！")
+					}
+				})
+
+			})
+
+			//监听城市选择以为区县的选择做出变化
+			$("#city-list").change(function () {
+				//获取城市的选择是什么
+				let cityChoose = $("#city-list").val()
+				//清空select下列列表中的所有option元素
+				$("#area-list").empty()
+				//追加默认值
+				$("#area-list").append(areaFirst)
+
+				if (cityChoose === "0"){
+					return false
+				}
+				let str = "";
+				$.ajax({
+					url : "/districts",
+					type: "get",
+					data:  "parent=" + cityChoose,
+					dataType: "json",
+					success: function (res) {
+						//成功之后将数据填充回下列列表当中
+						for (i= 0;i < res.data.length;i++){
+							//每一个district对象
+							let district = res.data[i]
+							str = "<option value=" + district.code +  ">"+ district.name + "</option>"
+							$("#area-list").append(str)
+						}
+					},
+					error: function () {
+						alert("查询区列表出错，请等待攻城狮修复！！")
+					}
+				})
+			})
+
+			//给添加按钮绑定单击事件
+			$("#btn-add-new-address").click(function () {
+				//判断手机号和收货人是否为空
+				let name = $("#name").val();
+				let phone = $("#phone").val();
+				if (phone == "" || name == ""){
+					$("#error-msg").html("请先填写需要修改的信息！");
+					return false;
+				}
+				//验证手机号是否符合要求
+				let checkPhone = /^[1][3,4,5,7,8][0-9]{9}$/;
+				if (!checkPhone.test(phone)){
+					$("#error-msg").html("手机号不符合要求！");
+					return false;
+				}
+				$.ajax({
+					url : "/addresses/addNewAddress",
+					type: "post",
+					data: $("#form-add-new-address").serialize(), //获取表单的所有内容
+					dataType: "json",
+					success: function (res) {
+						if (res.state === 200){
+							alert("新增成功！")
+							location.href = "address.html"
+						}else {
+							alert(res.message)
+						}
+					},
+					error: function (err) {
+						alert("新增收货地址产生未知的异常！！"+err)
+					}
+				})
+			})
+		})
+	</script>
 
 </html>

@@ -21,49 +21,10 @@
 		<!--	引入阻止表单上传跳转的js-->
 		<script src="../js/jquery-1.8.0.min.js"></script>
 		<script src="../js/jquery.form.js"></script>
-		<!--js代码	-->
-		<script type="text/javascript">
-			function afterFromSubmit(){
-				//阻止表单的默认跳转行为，并在ajax请求后进行重定向
-				$("#avatar").ajaxSubmit(function () {
-					alert("上传成功")
-					//页面重定向，防止表单重复提交
-					location.href = "upload.html"
-				})
-				//这一步很关键，防止submit默认的提交跳转行为
-				return false;
-			}
-
-			$(function () {
-				//引入公共头部、中间导航条以及页脚
-				$(".header").load("components/head.html")
-				$(".footer").load("components/footer.html")
-				$(".middleNavigation").load("components/middleNavigationBar.html")
-
-				//网页加载完成之前自动发送ajax请求
-				$.ajax({
-					url: "/user/queryUser",
-					type: "get",
-					dataType: "json",
-					success:function (res) {
-							//判断用户是首次注册还是老用户
-							if (res.data.avatar !== null &&res.data.avatar !== ""   ){
-								//设置用户头像
-								$("#img-avatar").attr("src",res.data.avatar)
-							}else{
-								//设置为默认头像
-								$("#img-avatar").attr("src","../images/index/user.jpg")
-							}
-					},
-					error:function (err) {
-						alert(err.message())
-					}
-				})
-			})
 
 
+		<script src="../bootstrap3/js/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
 
-		</script>
 
 	</head>
 
@@ -126,18 +87,19 @@
 					</ul>
 					<div class="panel-body">
 						<!--上传头像表单开始-->
+<!--						action="/users/changeAvatar"-->
+<!--						method="post"-->
+<!--						enctype="multipart/form-data"-->
+<!--						onsubmit="return afterFromSubmit()"-->
 						<form id="avatar"
-							  action="/file"
-							  method="post"
-							  enctype="multipart/form-data"
-							  onsubmit="return afterFromSubmit()"
+
 							  class="form-horizontal" role="form" >
 							<div class="form-group">
 								<label class="col-md-2 control-label">当前头像:</label>
 								<div class="col-md-5">
 									<img id="img-avatar"
-										 style="width: 200px;height: 200px;border-radius:50%; overflow:hidden;"
-										 class="img-responsive" />
+										 style="width: 200px;height: 200px;border-radius:50%; overflow:hidden; "
+										 class="img-responsive" src="../images/index/user.jpg"/>
 								</div>
 								<div class="clearfix"></div>
 								<div class="col-md-offset-2 col-md-4">
@@ -146,7 +108,7 @@
 							</div>
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-10">
-									<input id="uploadImg" type="submit" class="btn btn-primary" value="上传" />
+									<input id="uploadImg" type="button" class="btn btn-primary" value="上传" />
 								</div>
 							</div>
 						</form>
@@ -164,4 +126,45 @@
 
 	</body>
 
+<script>
+	$(function () {
+
+	})
+	$(document).ready(function () {
+		//引入公共头部、中间导航条以及页脚
+		$(".header").load("components/head.html")
+		$(".footer").load("components/footer.html")
+		$(".middleNavigation").load("components/middleNavigationBar.html")
+		if ($('#img-avatar').attr("src") === null){
+			console.log($('#img-avatar').attr("src") )
+			$('#img-avatar').attr("src","../images/index/user.jpg");
+		}
+
+		let avatar = $.cookie("avatar");
+		$('#img-avatar').attr("src",avatar);
+	})
+	$("#uploadImg").click(function (){
+		$.ajax({
+			url: "/users/changeAvatar",
+			type: "post",
+			data:new FormData($('#avatar')[0]),
+			processData:false,//处理数据的形式，关闭处理数据
+			contentType:false,//提交数据的形式，关闭默认提交数据的形式
+			dataType: "json",
+			success:function (res) {
+				if (res.state === 200){
+					alert("头像修改成功");
+					$('#img-avatar').attr("src",res.data)
+					//将新头像保存到cookie中
+					$.cookie("avatar",res.data,{expires:7})
+				}else {
+					alert("头像修改异常");
+				}
+			},
+			error:function (err) {
+				alert(err.message())
+			}
+		})
+	})
+</script>
 </html>

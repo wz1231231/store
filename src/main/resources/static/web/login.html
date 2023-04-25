@@ -51,6 +51,11 @@
 								window.location.href="index.html";
 								//将用户信息存入session域中
 								sessionStorage.setItem("user",JSON.stringify(res.data));
+								//将服务器返回头像设置到Cookie中
+								if (res.data.avatar === null){
+									res.data.avatar = "../images/index/user.jpg"
+								}
+								$.cookie("avatar",res.data.avatar,{expires:7})
 							}else {
 								$("#error-msg").html(res.message)
 							}

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class UserServiceTests {
@@ -55,6 +57,10 @@ public class UserServiceTests {
         user.setEmail("test01@qq.com");
         user.setGender(0);
         userService.changeInfo(35,"管理员",user);
+    }
+    @Test
+    public void changeAvatar(){
+        userService.changeAvatar(35,"321","管理员");
     }
 
 }
